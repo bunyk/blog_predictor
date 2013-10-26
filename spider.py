@@ -2,6 +2,7 @@ import requests
 import requests_cache
 
 from util import data_file
+from parsers import get_page_content_cc, iter_pages
 
 requests_cache.install_cache(data_file('cache'))
 
@@ -26,8 +27,10 @@ class Spider(object):
 
     def parse_page(self, page):
         text = wget(page)
+        content, cc = get_page_content_cc(text)
+        self.train_f(content, cc)
 
-def is_article(cls, url):
+def is_article(url):
     ''' When count of slashes in url is less than 7 - this is not article '''
     return sum(1 for c in url if c == '/') >= 7
 

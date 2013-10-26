@@ -62,9 +62,9 @@ def get_page_content_cc(html):
     parsed = BeautifulSoup(html)
     for theme, content_query, cc_query in THEMES_SELECTORS:
         if ('theme.wordpress.com/themes/%s/' % theme) in html:
-            main = select(parsed, content_query)
-            cc = select(parsed, cc_query)
-            return clean_html(main), get_comment_count(cc)
+            main = clean_html(select(parsed, content_query))
+            cc = get_comment_count(select(parsed, cc_query))
+            return main, cc
 
     raise ValueError('Unknown theme')
 

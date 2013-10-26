@@ -67,7 +67,6 @@ class TestParsers(unittest.TestCase):
         self.assertEquals(get_page_content_cc(wget('http://bunyk.wordpress.com/2013/10/14/im-nebel/'))[1], 1)
 
         res = get_page_content_cc(wget('http://vrubli.wordpress.com/2013/03/26/konkretnym_ne_konkretyzujchy/'))
-        print res[0]
         self.assertEquals(res[1], 6)
 
     def test_tokenizer(self):
@@ -83,6 +82,31 @@ class TestSpider(unittest.TestCase):
         ''' Request to test service, returns correct params '''
         from spider import wget
         self.assertIn('test', wget('http://httpbin.org/get?q=test'))
+
+    def test_grabbing(self):
+        from spider import Spider
+        def train(content, cc):
+            raise StopIteration
+        s = Spider(train)
+
+        self.assertRaises(StopIteration, s.parse_blog, 'http://bunyk.wordpress.com/')
+
+class TestClassifier(unittest.TestCase):
+    def setUp(self):
+        from classifier import Classifier
+        self.cl = Classifier()
+        self.cl.create_db('test.db')
+        self.cl.commit()
+
+    def test_some_texts(self):
+        for x in range(9):
+            self.cl.train('viagra', 'spam')
+        self.cl.train('penis', 'spam')
+        self.assertEquals(self.cl.fprob('viagra', 'spam'), 0.9)
+
+    def tearDown(self):
+        self.cl.con.rollback()
+
 
 
 if __name__ == '__main__':

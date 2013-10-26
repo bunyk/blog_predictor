@@ -54,4 +54,3 @@ class Persistence(object):
 
     def commit(self):
         self.con.commit()
-
