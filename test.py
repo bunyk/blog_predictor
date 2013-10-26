@@ -8,8 +8,7 @@ class TestPersistence(unittest.TestCase):
     def setUp(self):
         from model import Persistence
         self.persistence = Persistence()
-        self.persistence.create_db('test.db')
-        self.persistence.commit()
+        self.persistence.create_db(':memory:')
 
     def test_empty_feature_count(self):
         self.assertEquals(self.persistence.fcount('viagra', 'spam'), 0)
@@ -24,10 +23,6 @@ class TestPersistence(unittest.TestCase):
     def test_increment_cat_count(self):
         self.persistence.incc('spam')
         self.assertEquals(self.persistence.catcount('spam'), 1)
-
-    def tearDown(self):
-        self.persistence.con.rollback()
-
 
 class TestParsers(unittest.TestCase):
     def test_sitemap_parsing(self):
@@ -95,19 +90,31 @@ class TestClassifier(unittest.TestCase):
     def setUp(self):
         from classifier import Classifier
         self.cl = Classifier()
-        self.cl.create_db('test.db')
-        self.cl.commit()
+        self.cl.create_db(':memory:')
 
-    def test_some_texts(self):
+    def test_fprob(self):
         for x in range(9):
             self.cl.train('viagra', 'spam')
         self.cl.train('penis', 'spam')
         self.assertEquals(self.cl.fprob('viagra', 'spam'), 0.9)
 
-    def tearDown(self):
-        self.cl.con.rollback()
+    def test_weighted_prob_unknown(self):
+        self.assertEquals(0.5,
+            self.cl.weightedprob('viagra', 'spam')
+        )
 
+    def test_weighted_prob_biased(self):
+        self.cl.train('viagra', 'spam')
+        self.assertEquals(0.75,
+            self.cl.weightedprob('viagra', 'spam')
+        )
 
+    def test_train(self):
+        self.cl.train('1 2', 1)
+        self.cl.train('2 3', 1)
+        self.cl.train('3 4', 2)
+
+        self.assertEquals(list(self.cl.categories()), [1, 2])
 
 if __name__ == '__main__':
     unittest.main()

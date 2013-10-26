@@ -26,8 +26,10 @@ class Spider(object):
                 self.parse_page(page)
 
     def parse_page(self, page):
+        print page
         text = wget(page)
         content, cc = get_page_content_cc(text)
+        print 'Comments: %s | Content: %s' % (cc, content[:50])
         self.train_f(content, cc)
 
 def is_article(url):
