@@ -1,14 +1,14 @@
 import requests
+import requests_cache
 
 from util import data_file
 
-http = httplib2.Http('.cache')
+requests_cache.install_cache(data_file('cache'))
 
 def wget(url):
     r = requests.get(url)
     if r.status_code == 200:
         return r.text
-
 
 class Spider(object):
     def __init__(self, train_f):
@@ -20,15 +20,14 @@ class Spider(object):
 
         sitemap = wget(url + 'sitemap.xml')
 
-        # І зберігаємо кожну сторінку про яку пише sitemap:
         for page in iter_pages(sitemap):
-            if self.is_article(page):
-                self.parse_page(page, blogname)
+            if is_article(page):
+                self.parse_page(page)
 
+    def parse_page(self, page):
+        text = wget(page)
 
-class WordpressComSpider(Spider):
+def is_article(cls, url):
+    ''' When count of slashes in url is less than 7 - this is not article '''
+    return sum(1 for c in url if c == '/') >= 7
 
-    @classmethod
-    def is_article(cls, url):
-        ''' Якщо кількість слешів в url менше семи - це не стаття '''
-        return sum(1 for c in url if c == '/') >= 7
