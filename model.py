@@ -6,7 +6,7 @@ from util import data_file
 class Persistence(object):
 
     def execute(self, *args):
-        print 'execute(%s)' % ', '.join(map(repr, args))
+        # print 'execute(%s)' % ', '.join(map(repr, args))
         return self.con.execute(*args)
 
     def create_db(self, dbfile):
@@ -52,11 +52,12 @@ class Persistence(object):
             self.execute('update cc set count=? where category=?',
                 (count + 1, category)
             )
+        self.commit()
 
     def catcount(self, category):
         ''' Get count of samples in category '''
         res = self.execute('select count from cc '
-            'where category="%s"' % category
+            'where category=?', (category,)
         ).fetchone()
         return float(res[0]) if res else 0
 
@@ -70,5 +71,5 @@ class Persistence(object):
         return res[0] if res else 0
 
     def commit(self):
-        print 'commit()'
+        # print 'commit()'
         self.con.commit()

@@ -109,6 +109,10 @@ class TestClassifier(unittest.TestCase):
             self.cl.weightedprob('viagra', 'spam')
         )
 
+    def test_train_adds_category(self):
+        self.cl.train('1 2', 1)
+        self.assertEquals(list(self.cl.categories()), [1])
+
     def test_train(self):
         self.cl.train('1 2', 1)
         self.cl.train('2 3', 1)
