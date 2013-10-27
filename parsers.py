@@ -32,7 +32,7 @@ def clean_html(html):
     return cleaned.strip()
 
 
-TOKENIZE_REGEX = re.compile(ur'([\w`-]+|[^\w\s]|\s+)', re.U)
+TOKENIZE_REGEX = re.compile(ur'([\w`-]+)', re.U)
  
 def tokenize(text):
     return (s.groups()[0] for s in TOKENIZE_REGEX.finditer(text))
@@ -56,7 +56,7 @@ def get_comment_count(html_node):
     if numbers:
         return int(numbers[0])
     else:
-        raise ValueError('Unknown comment count: %r' % text)
+        return 0
 
 def get_page_content_cc(html):
     parsed = BeautifulSoup(html)

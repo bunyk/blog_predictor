@@ -3,22 +3,22 @@ from parsers import tokenize
 
 class Classifier(Persistence):
     def check(self, item):
-        print list(self.categories())
-        return
         res = []
         for cat in self.categories():
             res.append((cat, self.test(item, cat)))
-        res.sort(key=lambda x: x[1])
+        res.sort(key=lambda x: -x[1])
         return res
 
+    def get_features(self, item):
+        return set(x.lower() for x in tokenize(item))
+
     def test(self, item, category):
-        print 'testing', category
         # probability of finding all features of sample in given category
         total = reduce(
             lambda a, b: a * b, 
             (
                 self.weightedprob(feature, category)
-                for feature in tokenize(item)
+                for feature in self.get_features(item)
             )
         )
         return total * (
@@ -27,10 +27,11 @@ class Classifier(Persistence):
         )
 
     def train(self, item, category):
-        for feature in tokenize(item):
+        for feature in self.get_features(item):
             self.incf(feature, category)
 
         self.incc(category)
+        self.commit()
 
     def fprob(self, feature, category):
         ''' Probability of finding feature in samples of given category '''

@@ -41,7 +41,6 @@ class Persistence(object):
                 'where feature=? and category=?',
                 (count + 1, feature, category)
             )
-        self.commit()
 
     def incc(self, category):
         ''' Increment category usages '''
@@ -52,7 +51,6 @@ class Persistence(object):
             self.execute('update cc set count=? where category=?',
                 (count + 1, category)
             )
-        self.commit()
 
     def catcount(self, category):
         ''' Get count of samples in category '''

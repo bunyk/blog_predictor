@@ -10,15 +10,17 @@ def train(cl, blog):
 
 
 def test(cl):
-    from pprint import pprint
-    pprint(cl.check(u'''Але сесії завтра прийде кінець, тому почну рухатись.
-    В університет мені їхати досить довго – від Ⓜ “червоний хутір” аж до Ⓜ “Виставковий центр”,
-    але завдяки Kindle мені на кінцевій навіть виходити не хочеться – хочеться читати далі.
-    '''))
+    inp = []
+    for row in sys.stdin:
+        inp.append(row.decode('utf-8'))
+
+    res = cl.check(u'\n'.join(inp))
+    for cat, prob in res:
+        print cat, repr(prob)
 
 def main(mode='test'):
     cl = Classifier()
-    cl.create_db('base.db')
+    cl.create_db('bunyk.db')
 
     if mode == 'test':
         test(cl)

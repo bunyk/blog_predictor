@@ -68,7 +68,7 @@ class TestParsers(unittest.TestCase):
         from parsers import tokenize
         self.assertEquals(
             list(tokenize('буттям «кинутої ')), 
-            ['буттям', ' ', '«', 'кинутої', ' ']
+            ['буттям', 'кинутої'],
         )
 
 
@@ -119,6 +119,18 @@ class TestClassifier(unittest.TestCase):
         self.cl.train('3 4', 2)
 
         self.assertEquals(list(self.cl.categories()), [1, 2])
+
+    def test_check_plain(self):
+        tmp_prob = self.cl.weightedprob
+        self.cl.weightedprob = self.cl.fprob
+
+        for i in range(9):
+            self.cl.train('penis', 'spam')
+        self.cl.train('penis', 'ok')
+
+        self.assertEquals(self.cl.check('penis')[0], ('spam', 0.9))
+
+        self.cl.weightedprob = tmp_prob
 
 if __name__ == '__main__':
     unittest.main()
